@@ -11,12 +11,14 @@ class TestOptimizer:
   num_districts = 0
   population = []
   total_population = 0
+  density = []
   num_positive = []
   total_num_positive = 0
   num_deaths = []
   total_num_deaths = 0
   num_recoveries = []
   total_num_recoveries = 0
+  thuenen_type = []
 
   # Constructor
   def __init__(self, filename):
@@ -48,16 +50,20 @@ class TestOptimizer:
     jsonfile = pygeoj.load(filepath=filename)
     self.num_districts = len(jsonfile)
     for feature in jsonfile:
-      ewz = feature.properties['EWZ']
-      cases = feature.properties['cases']
-      deaths = feature.properties['deaths']
-      recovered = feature.properties['recovered']
-      self.total_population += ewz
-      self.population.append(ewz)
+      residents = feature.properties['EWZ']
+      cases = feature.properties['Anzahl Fälle']
+      deaths = feature.properties['Anzahl Todesfälle']
+      recovered = feature.properties['Genesene']
+      area = feature.properties['KFL']                  #in km²
+      t_type = feature.properties['Thünen-Typ']         #indicator if the area is rural and has low economy
+      self.total_population += residents
+      self.population.append(residents)
+      self.density.append((residents/area))            
       self.total_num_positive += cases
       self.num_positive.append(cases)
       self.total_num_deaths += deaths
       self.num_deaths.append(deaths)
+      self.thuenen_type.append(t_type)
       #self.total_num_recoveries += recovered
       #self.num_recoveries.append(recovered)
 
