@@ -13,6 +13,8 @@ EUvsVirus project repository
 
 `python test.py <inputfile> <outputfile>`
 
+The output file can be visualized using http://geojson.io/
+
 # Dependencies
 
 * PyGeoj 1.0.0 (https://pypi.org/project/PyGeoj/)
