@@ -7,7 +7,7 @@ EUvsVirus project repository
 
 2. Runs an optimizer *(Need to correctly define the objective function and constraints)*
 
-3. Output a GeoJSON file with the optimized quantity as an attribute *(Overwrites all other properties, only one of the available solutions is printed out)*
+3. Output a GeoJSON file with the optimized quantity as an attribute
 
 # Usage 
 
