@@ -8,6 +8,7 @@ import pygeoj
 import pygmo as pg
 
 class TestOptimizer:
+  max_kits = 50000
   num_districts = 0
   population = []
   total_population = 0
@@ -19,22 +20,37 @@ class TestOptimizer:
   num_recoveries = []
   total_num_recoveries = 0
   thuenen_type = []
+  # NOTE: The following data are not yet retrieved from any dataset
+  num_hospitals = []
+  total_num_hospitals = 0
+  num_tests = []
+  total_tests = 0
+  area = []
+  total_area = 0
 
   # Constructor
-  def __init__(self, filename):
+  def __init__(self, filename, maxkits=50000):
     self.readGeoJSON(filename)
+    self.max_kits = maxkits
 
-  # Fitness function
+  # Objective function to be optimized
+  # Constraint is passed as another objective function
   def fitness(self, x):
     f = []
-    # Local effectiveness function to be defined below
+    total_kits = 0
+    # Local effectiveness function for each district to be defined below
     for i in range(self.num_districts):
-      f.append( self.num_positive[i] / self.population[i])
+      #f.append( (self.num_hospitals[i]*self.population[i]*self.num_tests[i]+x[i])*total_area / self.population[i])
+      f.append( (self.num_positive[i]) / self.population[i])
+      total_kits += x[i]
+
+    # The constraint on the global number of testing kits
+    f.append((total_kits - self.max_kits));
     return f
 
-  # Number of objective functions is same as number of districts
+  # Number of objective functions is number of districts + one constraint
   def get_nobj(self):
-    return self.num_districts
+    return (self.num_districts+1)
 
   # Define the lower and upper bounds for optimization
   def get_bounds(self):
@@ -51,21 +67,25 @@ class TestOptimizer:
     self.num_districts = len(jsonfile)
     for feature in jsonfile:
       residents = feature.properties['EWZ']
-      cases = feature.properties['Anzahl Fälle']
-      deaths = feature.properties['Anzahl Todesfälle']
-      recovered = feature.properties['Genesene']
+      cases = feature.properties['cases']
+      deaths = feature.properties['deaths']
+      recovered = feature.properties['recovered']
       area = feature.properties['KFL']                  #in km²
-      t_type = feature.properties['Thünen-Typ']         #indicator if the area is rural and has low economy
+      #t_type = feature.properties['Thünen-Typ']         #indicator if the area is rural and has low economy
       self.total_population += residents
       self.population.append(residents)
-      self.density.append((residents/area))            
       self.total_num_positive += cases
       self.num_positive.append(cases)
       self.total_num_deaths += deaths
       self.num_deaths.append(deaths)
-      self.thuenen_type.append(t_type)
+      #self.thuenen_type.append(t_type)
+      # recovered information currently not available in the dataset
       #self.total_num_recoveries += recovered
       #self.num_recoveries.append(recovered)
+      # Area information is not available for all
+      #self.total_area += area
+      #self.area.append(area)
+      #self.density.append((residents/area))
 
 def main(argv):
   help_message = 'test.py <inputfile> <outputfile>' 
@@ -96,7 +116,7 @@ def main(argv):
   counter = 0
   for feature in jsonfile:
     for sol in range(solution_size):
-      feature.properties = {"sol"+str(sol):str(vectors[sol][counter])}
+      feature.properties["sol"+str(sol)] = str(int(vectors[sol][counter]));
     counter += 1
   # Save output
   jsonfile.save(outputfile);
