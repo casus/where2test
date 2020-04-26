@@ -16,7 +16,7 @@ from the  parent directory
 The output file can be visualized using http://geojson.io/
 
 
-# Dependencied for R
+# Dependencies in R
 
 * shiny
 * covid19
@@ -24,7 +24,7 @@ The output file can be visualized using http://geojson.io/
 * ggplot2
 * dplyr
 
-# Dependencies for python
+# Dependencies in python
 
 * PyGeoj 1.0.0 (https://pypi.org/project/PyGeoj/)
 * PyGMO 2 (https://github.com/esa/pygmo2)
